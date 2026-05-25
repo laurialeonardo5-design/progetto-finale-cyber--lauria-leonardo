@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Middleware\FrameGuard;
-use App\Http\Middleware\RateLimit;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -20,7 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'writer' => App\Http\Middleware\UserIsWriter::class,
             'admin.local'=> App\Http\Middleware\OnlyLocalAdmin::class
         ]);
-    })
+        })
+ ->withMiddleware(function (Middleware $middleware) {
+
+    $middleware->append(\App\Http\Middleware\BlockSuspiciousIPs::class);
+
+})
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
