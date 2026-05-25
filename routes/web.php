@@ -6,7 +6,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\WriterController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\RevisorController;
-
+Route::middleware(['block.suspicious:60,1'])->group(function () {
 // Public routes
 Route::get('/', [PublicController::class, 'homepage'])->name('homepage');
 Route::get('/careers', [PublicController::class, 'careers'])->name('careers');
@@ -16,7 +16,7 @@ Route::get('/articles/index', [ArticleController::class, 'index'])->name('articl
 Route::get('/articles/show/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
 Route::get('/articles/category/{category}', [ArticleController::class, 'byCategory'])->name('articles.byCategory');
 Route::get('/articles/user/{user}', [ArticleController::class, 'byUser'])->name('articles.byUser');
-Route::get('/articles/search', [ArticleController::class, 'articleSearch'])->name('articles.search');
+Route::get('/articles/search', [ArticleController::class, 'articleSearch'])->name('articles.search')->middleware('block.suspicious:5,10');
 
 // Writer routes
 Route::middleware('writer')->group(function(){
@@ -49,4 +49,5 @@ Route::middleware(['admin','admin.local'])->group(function(){
     Route::delete('/admin/delete/category/{category}', [AdminController::class, 'deleteCategory'])->name('admin.deleteCategory');
     Route::post('/admin/category/store', [AdminController::class, 'storeCategory'])->name('admin.storeCategory');
     Route::post('/admin/tag/store', [AdminController::class, 'storeTag'])->name('admin.storeTag');
+});
 });
