@@ -45,3 +45,4 @@
         @endforeach
     </tbody>
 </table>
+<option selected value="http://internal.finance:8001/user-data.php">NewsAPI - IT</option>
