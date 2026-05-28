@@ -7,6 +7,9 @@ use App\Models\Tag;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event; 
+use Illuminate\Auth\Events\Registered; 
+use App\Listeners\LogRegisteredUser;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +34,9 @@ class AppServiceProvider extends ServiceProvider
             $tags = Tag::all();
             View::share(['tags' => $tags]);
         }
+        Event::listen(
+            Registered::class,
+            LogRegisteredUser::class
+        );
     }
 }

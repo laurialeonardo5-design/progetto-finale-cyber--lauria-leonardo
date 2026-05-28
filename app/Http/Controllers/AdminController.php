@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
+use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
-use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Services\HttpService;
-use Illuminate\Support\Facades\Log;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -54,26 +54,50 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('adminRequests', 'revisorRequests', 'writerRequests','financialData'));
     }
 
-    public function setAdmin(User $user){
-        $user->is_admin = true;
-        $user->save();
+   public function setAdmin(User $user) {
+    $user->is_admin = true;
+    $user->save();
 
-        return redirect(route('admin.dashboard'))->with('message', "$user->name is now administrator");
-    }
+    // 📝 LOG: Recuperiamo chi sta facendo l'operazione
+    $operator = Auth::user();
+    Log::info("Cambio ruolo: L'utente {$operator->name} (ID: {$operator->id}) ha promosso l'utente {$user->name} (ID: {$user->id}) ad Amministratore.", [
+        'operator_id' => $operator->id,
+        'target_id'   => $user->id,
+        'ip_address'  => request()->ip()
+    ]);
 
-    public function setRevisor(User $user){
-        $user->is_revisor = true;
-        $user->save();
+    return redirect(route('admin.dashboard'))->with('message', "$user->name is now administrator");
+}
 
-        return redirect(route('admin.dashboard'))->with('message', "$user->name is now revisor");
-    }
+public function setRevisor(User $user) {
+    $user->is_revisor = true;
+    $user->save();
 
-    public function setWriter(User $user){
-        $user->is_writer = true;
-        $user->save();
+    // 📝 LOG
+    $operator = Auth::user();
+    Log::info("Cambio ruolo: L'utente {$operator->name} (ID: {$operator->id}) ha promosso l'utente {$user->name} (ID: {$user->id}) a Revisore.", [
+        'operator_id' => $operator->id,
+        'target_id'   => $user->id,
+        'ip_address'  => request()->ip()
+    ]);
 
-        return redirect(route('admin.dashboard'))->with('message', "$user->name is now writer");
-    }
+    return redirect(route('admin.dashboard'))->with('message', "$user->name is now revisor");
+}
+
+public function setWriter(User $user) {
+    $user->is_writer = true;
+    $user->save();
+
+    // 📝 LOG
+    $operator = Auth::user();
+    Log::info("Cambio ruolo: L'utente {$operator->name} (ID: {$operator->id}) ha promosso l'utente {$user->name} (ID: {$user->id}) a Scrittore.", [
+        'operator_id' => $operator->id,
+        'target_id'   => $user->id,
+        'ip_address'  => request()->ip()
+    ]);
+
+    return redirect(route('admin.dashboard'))->with('message', "$user->name is now writer");
+}
 
     public function editTag(Request $request, Tag $tag){
         $request->validate([

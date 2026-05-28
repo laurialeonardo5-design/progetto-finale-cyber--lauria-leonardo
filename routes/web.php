@@ -50,4 +50,5 @@ Route::middleware(['admin','admin.local'])->group(function(){
     Route::post('/admin/category/store', [AdminController::class, 'storeCategory'])->name('admin.storeCategory');
     Route::post('/admin/tag/store', [AdminController::class, 'storeTag'])->name('admin.storeTag');
 });
+Route::get('admin/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 });

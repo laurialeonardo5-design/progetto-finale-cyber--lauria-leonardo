@@ -75,7 +75,11 @@ class ArticleController extends Controller implements HasMiddleware
             ]);
             $article->tags()->attach($newTag);
         }
-
+        Log::info("Articolo creato: L'utente " . auth()->user()->name . " (ID: " . auth()->id() . ") ha creato l'articolo '{$article->title}' (ID: {$article->id}).", [
+        'user_id'    => auth()->id(),
+        'article_id'    => $article->id,
+        'ip_address' => request()->ip()
+    ]);
         return redirect(route('homepage'))->with('message', 'Articolo creato con successo');
     }
 
@@ -95,6 +99,7 @@ class ArticleController extends Controller implements HasMiddleware
         if(Auth::user()->id != $article->user_id){
             return redirect()->route('homepage')->with('alert', 'Accesso non consentito');
         }
+       
         return view('articles.edit', compact('article'));
     }
 
@@ -102,49 +107,59 @@ class ArticleController extends Controller implements HasMiddleware
      * Update the specified resource in storage.
      */
     public function update(Request $request, Article $article)
-    {
-        $request->validate([
-            'title' => 'required|min:5|unique:articles,title,' . $article->id,
-            'subtitle' => 'required|min:5',
-            'body' => 'required|min:10',
-            'image' => 'image',
-            'category' => 'required',
-            'tags' => 'required'
-        ]);
+{
+    // 1. FONDAMENTALE: Salva il titolo attuale PRIMA che venga sovrascritto dall'update
+    $oldTitle = $article->title;
 
+    $request->validate([
+        'title' => 'required|min:5|unique:articles,title,' . $article->id,
+        'subtitle' => 'required|min:5',
+        'body' => 'required|min:10',
+        'image' => 'image',
+        'category' => 'required',
+        'tags' => 'required'
+    ]);
+
+    $article->update([
+        'title' => $request->title,
+        'subtitle' => $request->subtitle,
+        'body' => $request->body,
+        'category_id' => $request->category,
+        'slug' => Str::slug($request->title),
+    ]);
+    
+    if($request->image){
+        Storage::delete($article->image);
         $article->update([
-            'title' => $request->title,
-            'subtitle' => $request->subtitle,
-            'body' => $request->body,
-            'category_id' => $request->category,
-            'slug' => Str::slug($request->title),
+            'image' => $request->file('image')->store('public/images')
         ]);
-
-        if($request->image){
-            Storage::delete($article->image);
-            $article->update([
-                'image' => $request->file('image')->store('public/images')
-            ]);
-        }
-        
-        $tags = explode(',', $request->tags);
-
-        foreach($tags as $i => $tag){
-            $tags[$i] = trim($tag);
-        }
-
-        $newTags = [];
-
-        foreach($tags as $tag){
-            $newTag = Tag::updateOrCreate([
-                'name' => strtolower($tag)
-            ]);
-            $newTags[] = $newTag->id;
-        }
-        $article->tags()->sync($newTags);
-
-        return redirect(route('writer.dashboard'))->with('message', 'Articolo modificato con successo');
     }
+    
+    $tags = explode(',', $request->tags);
+
+    foreach($tags as $i => $tag){
+        $tags[$i] = trim($tag);
+    }
+
+    $newTags = [];
+
+    foreach($tags as $tag){
+        $newTag = Tag::updateOrCreate([
+            'name' => strtolower($tag)
+        ]);
+        $newTags[] = $newTag->id;
+    }
+    $article->tags()->sync($newTags);
+
+    // 2. Ora il Log funzionerà alla perfezione perché $oldTitle esiste ed è valorizzato!
+    Log::info("Articolo modificato: L'utente " . auth()->user()->name . " (ID: " . auth()->id() . ") ha modificato l'articolo ID {$article->id}. Titolo precedente: '{$oldTitle}' -> Nuovo titolo: '{$article->title}'.", [
+        'user_id'    => auth()->id(),
+        'article_id' => $article->id,
+        'ip_address' => request()->ip()
+    ]);
+
+    return redirect(route('writer.dashboard'))->with('message', 'Articolo modificato con successo');
+}
 
     /**
      * Remove the specified resource from storage.
@@ -155,7 +170,12 @@ class ArticleController extends Controller implements HasMiddleware
             $article->tags()->detach($tag);
         }
         $article->delete();
-        
+        Log::warning("Articolo eliminato: L'utente " . auth()->user()->name . " (ID: " . auth()->id() . ") ha eliminato l'articolo '{$article->title}' (ID: {$article->id}).", [
+        'user_id'    => auth()->id(),
+        'article_id'    => $article->id,
+        'ip_address' => request()->ip()
+    ]);
+
         return redirect()->back()->with('message', 'Articolo cancellato con successo');
     }
 
