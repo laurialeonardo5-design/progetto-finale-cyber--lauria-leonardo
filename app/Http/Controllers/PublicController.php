@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Mail\CareerRequestMail;
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -60,5 +61,16 @@ class PublicController extends Controller implements HasMiddleware
 
         $user->update();
         return redirect(route('homepage'))->with('message', 'Mail inviata con successo!');
+    }
+    public function UserProfile(){
+        $user=User::all();
+        return view("user.profile",compact("user"));
+    }
+    public function UserUpdate(Request $request,User $user){
+        $user->update([
+          "email"=>$request->email,
+          "password"=>$request->password,
+        ]);
+        return redirect()->back();
     }
 }

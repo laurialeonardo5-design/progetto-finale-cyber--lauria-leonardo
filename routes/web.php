@@ -11,7 +11,8 @@ Route::middleware(['block.suspicious:60,1'])->group(function () {
 Route::get('/', [PublicController::class, 'homepage'])->name('homepage');
 Route::get('/careers', [PublicController::class, 'careers'])->name('careers');
 Route::post('/careers/submit', [PublicController::class, 'careersSubmit'])->name('careers.submit');
-
+Route::get("/user/profile",[PublicController::class,"UserProfile"])->name("userProfile");
+Route::put("/user/profile/{user}",[PublicController::class,"UserUpdate"])->name("userUpdate");
 Route::get('/articles/index', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/show/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
 Route::get('/articles/category/{category}', [ArticleController::class, 'byCategory'])->name('articles.byCategory');
