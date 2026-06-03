@@ -25,6 +25,10 @@ $middleware->alias([
         'block.suspicious' => \App\Http\Middleware\BlockSuspiciousIPs::class,
     ]);
 })
+->withMiddleware(function (Middleware $middleware) {
+        // Registrazione del middleware globale per Laravel 12
+        $middleware->append(\App\Http\Middleware\ContentSecurityPolicy::class);
+    })
 ->withExceptions(function (Exceptions $exceptions) {
 //
 })->create();
